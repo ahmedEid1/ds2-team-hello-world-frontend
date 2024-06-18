@@ -1,0 +1,29 @@
+name: 'CI - Code Coverage'
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check coverage
+        uses: ArtiomTr/jest-coverage-report-action@v2
+        with:
+          test-script: yarn test
+          package-manager: yarn
+          output: comment, report-markdown
+          working-directory: ./app
