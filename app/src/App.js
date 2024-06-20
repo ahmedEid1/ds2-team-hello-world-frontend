@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Keycloak from 'keycloak-js';
 import './App.css';
-import keycloakConfig from './keycloak-config.json';
+import keycloakConfig from './keycloak-config';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -24,7 +24,7 @@ function App() {
     if (keycloak && authenticated) {
       keycloak.updateToken(5).then(() => {
         axios
-          .get('http://localhost:5000', {
+          .get(process.env.REACT_APP_API_URL, {
             headers: {
               Authorization: `Bearer ${keycloak.token}`,
             },
