@@ -3,7 +3,7 @@ FROM node:14
 # Set working directory
 WORKDIR /app
 
-ENV REACT_APP_KEYCLOAK_URL=https://localhost:8080/
+ENV REACT_APP_KEYCLOAK_URL=http://localhost:8080/
 ENV REACT_APP_KEYCLOAK_REALM=myrealm
 ENV REACT_APP_KEYCLOAK_CLIENT_ID=myfrontendclient
 ENV REACT_APP_API_URL=http://localhost:5000/
