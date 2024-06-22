@@ -20,4 +20,6 @@ RUN npm run build
 
 # Expose port and define the command to run the app
 EXPOSE 3000
+
+# Run the app
 CMD ["npx", "serve", "-s", "build",  "-l", "3000"]
