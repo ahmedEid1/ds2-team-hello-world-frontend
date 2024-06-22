@@ -1,0 +1,68 @@
+name: Frontend CD
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./app
+
+      - name: Create .env file for dev
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          echo "REACT_APP_KEYCLOAK_URL=${{ secrets.REACT_APP_KEYCLOAK_URL_DEV }}" >> .env
+          echo "REACT_APP_KEYCLOAK_REALM=${{ secrets.REACT_APP_KEYCLOAK_REALM_DEV }}" >> .env
+          echo "REACT_APP_KEYCLOAK_CLIENT_ID=${{ secrets.REACT_APP_KEYCLOAK_CLIENT_ID_DEV }}" >> .env
+          echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL_DEV }}" >> .env
+        working-directory: ./app
+
+      - name: Create .env file for prod
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "REACT_APP_KEYCLOAK_URL=${{ secrets.REACT_APP_KEYCLOAK_URL_PROD }}" >> .env
+          echo "REACT_APP_KEYCLOAK_REALM=${{ secrets.REACT_APP_KEYCLOAK_REALM_PROD }}" >> .env
+          echo "REACT_APP_KEYCLOAK_CLIENT_ID=${{ secrets.REACT_APP_KEYCLOAK_CLIENT_ID_PROD }}" >> .env
+          echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL_PROD }}" >> .env
+        working-directory: ./app
+
+      - name: Run tests
+        run: npm test
+        working-directory: ./app
+
+      - name: Build
+        run: npm run build
+        working-directory: ./app
+
+      - name: Deploy to S3 (prod)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          aws s3 sync ./app/build s3://ds2-bucket --delete
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to S3 (dev)
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          aws s3 sync ./app/build s3://ds2-bucket-dev --delete
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
