@@ -7,6 +7,14 @@ This document provides a detailed explanation of the frontend deployment process
 * the Continuous Deployment (CD) and Continuous Integration (CI) pipelines
 * Environment configurations and secrets management
 * Deployed environments and S3 buckets
+   - Amazon S3 is a highly scalable, secure, and cost-effective storage service that can be used to host static websites and assets. (great for a small application) 
+   - However, it has limitations in terms of latency, security, and handling high traffic. These drawbacks can be effectively mitigated by integrating Amazon **_CloudFront_** (a content delivery network (CDN)).
+
+### Application Architecture
+![Application Architecture](diagrams/architecture.png)
+
+### Frontend Deployment Overview
+![Deployment](diagrams/deployment.png)
 
 ---
 ## Technologies Used
